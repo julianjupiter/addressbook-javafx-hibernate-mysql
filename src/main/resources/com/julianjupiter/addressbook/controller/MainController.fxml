@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+
+
+<BorderPane prefHeight="600.0" prefWidth="960.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.julianjupiter.addressbook.controller.MainController">
+   <left>
+      <TableView fx:id="contactTableView" prefHeight="600.0" prefWidth="300.0" BorderPane.alignment="CENTER">
+        <columns>
+          <TableColumn fx:id="firstNameTableColumn" prefWidth="75.0" text="First Name" />
+          <TableColumn fx:id="lastNameTableColumn" prefWidth="75.0" text="Last Name" />
+        </columns>
+         <columnResizePolicy>
+            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+         </columnResizePolicy>
+      </TableView>
+   </left>
+   <center>
+      <BorderPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+         <top>
+            <HBox prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+         </top>
+      </BorderPane>
+   </center>
+   <top>
+      <HBox fx:id="headerHBox" prefHeight="60.0" prefWidth="200.0" style="-fx-background-color: #3F51B5;" BorderPane.alignment="CENTER">
+         <children>
+            <Pane prefHeight="60.0" prefWidth="480.0">
+               <children>
+                  <Label id="applicationTitle" fx:id="applicationTitle" prefHeight="60.0" prefWidth="206.0" stylesheets="@../../../../css/style.css" text="Address Book" textFill="WHITE">
+                     <font>
+                        <Font size="30.0" />
+                     </font>
+                     <padding>
+                        <Insets left="10.0" />
+                     </padding>
+                  </Label>
+               </children>
+            </Pane>
+            <Pane prefHeight="60.0" prefWidth="480.0">
+               <children>
+                  <FontIcon fx:id="minimizeWindowFontIcon" iconColor="WHITE" iconLiteral="mdi-window-minimize" iconSize="18" layoutX="410.0" layoutY="39.0" />
+                  <FontIcon fx:id="closeWindowFontIcon" iconColor="WHITE" iconLiteral="mdi-window-close" iconSize="18" layoutX="442.0" layoutY="39.0" />
+               </children>
+            </Pane>
+         </children>
+      </HBox>
+   </top>
+</BorderPane>
