@@ -1,7 +1,6 @@
 package com.julianjupiter.addressbook.controller;
 
 import com.julianjupiter.addressbook.dao.ContactDao;
-import com.julianjupiter.addressbook.entity.Contact;
 import com.julianjupiter.addressbook.service.ContactService;
 import com.julianjupiter.addressbook.util.ContactMapper;
 import javafx.application.Platform;
