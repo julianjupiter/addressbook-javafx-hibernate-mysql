@@ -8,7 +8,7 @@ import java.util.Optional;
 public interface Dao<T, ID> {
     List<T> findAll();
 
-    Optional<Contact> findById(ID id);
+    Optional<T> findById(ID id);
 
     void save(T t);
 
