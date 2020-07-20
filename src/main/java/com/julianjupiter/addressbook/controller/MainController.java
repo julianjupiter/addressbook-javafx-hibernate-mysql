@@ -1,13 +1,13 @@
 package com.julianjupiter.addressbook.controller;
 
 import com.julianjupiter.addressbook.dao.ContactDao;
-import com.julianjupiter.addressbook.entity.Contact;
 import com.julianjupiter.addressbook.service.ContactService;
 import com.julianjupiter.addressbook.util.ContactMapper;
 import com.julianjupiter.addressbook.util.View;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
@@ -18,16 +18,18 @@ import javafx.scene.control.TableView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.paint.Paint;
-import javafx.scene.text.TextAlignment;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.kordamp.ikonli.javafx.FontIcon;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class MainController implements Controller, Initializable {
@@ -59,24 +61,28 @@ public class MainController implements Controller, Initializable {
     private BorderPane firstActionBorderPane;
     @FXML
     private BorderPane secondActionBorderPane;
-//    @FXML
+    @FXML
+    private FontIcon newContactFontIcon;
+    //    @FXML
     private FontIcon editFontIcon;
-//    @FXML
+    //    @FXML
     private FontIcon deleteFontIcon;
-//    @FXML
+    //    @FXML
     private FontIcon cancelFontIcon;
-//    @FXML
-    private FontIcon updateFontIcon;
+    //    @FXML
+    private FontIcon saveFontIcon;
 
     private ObservableList<ContactProperty> contactPropertiesObservable = FXCollections.observableArrayList();
 
     private final ContactService contactService;
     private final ContactMapper contactMapper;
     private ContactProperty selectedContactProperty;
+    private final Validator validator;
 
     public MainController() {
         this.contactService = ContactService.create(ContactDao.create());
         this.contactMapper = new ContactMapper();
+        this.validator = Validation.buildDefaultValidatorFactory().getValidator();
     }
 
     @Override
@@ -86,6 +92,7 @@ public class MainController implements Controller, Initializable {
         this.initContactTableView();
         this.initContactAction();
         this.initContactActionFontIcons();
+        this.initNewContactFontIcon();
         this.initEditContact();
     }
 
@@ -108,7 +115,7 @@ public class MainController implements Controller, Initializable {
             }
         });
 
-        closeWindowFontIcon.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> {
+        closeWindowFontIcon.setOnMouseClicked(mouseEvent -> {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Close Application");
             alert.setHeaderText("You are about to close the application.");
@@ -122,7 +129,7 @@ public class MainController implements Controller, Initializable {
                     .ifPresent(buttonType -> Platform.exit());
         });
 
-        minimizeWindowFontIcon.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> {
+        minimizeWindowFontIcon.setOnMouseClicked(mouseEvent -> {
             primaryStage.setIconified(true);
         });
     }
@@ -137,9 +144,10 @@ public class MainController implements Controller, Initializable {
         this.contactPropertiesObservable.addAll(contactProperties);
         this.contactTableView.setItems(this.contactPropertiesObservable);
 
-        this.contactTableView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            this.viewContact(newValue);
-        });
+        this.contactTableView
+                .getSelectionModel()
+                .selectedItemProperty()
+                .addListener((observable, oldValue, newValue) -> this.viewContact(newValue));
     }
 
     private void initContactAction() {
@@ -161,14 +169,11 @@ public class MainController implements Controller, Initializable {
         this.cancelFontIcon.setIconColor(Paint.valueOf("#3F51B5"));
         this.cancelFontIcon.setIconLiteral("mdi-close");
         this.cancelFontIcon.setIconSize(18);
-        this.cancelFontIcon.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> {
-            this.viewContact(this.selectedContactProperty);
-        });
 
-        this.updateFontIcon = new FontIcon();
-        this.updateFontIcon.setIconColor(Paint.valueOf("#3F51B5"));
-        this.updateFontIcon.setIconLiteral("mdi-content-save");
-        this.updateFontIcon.setIconSize(18);
+        this.saveFontIcon = new FontIcon();
+        this.saveFontIcon.setIconColor(Paint.valueOf("#3F51B5"));
+        this.saveFontIcon.setIconLiteral("mdi-content-save");
+        this.saveFontIcon.setIconSize(18);
     }
 
     private void viewContact(ContactProperty contactProperty) {
@@ -178,6 +183,7 @@ public class MainController implements Controller, Initializable {
         viewContactController.setContactProperty(contactProperty);
         var anchorPane = viewContactView.component();
         this.contactBorderPane.setCenter(anchorPane);
+        this.contactActionBorderPane.setVisible(true);
         this.contactActionBorderPane.setStyle("-fx-background-color: #CCCCCC");
         this.contactActionLabel.setStyle("-fx-text-fill: #3F51B5");
         this.contactActionLabel.setText("View Contact");
@@ -187,16 +193,70 @@ public class MainController implements Controller, Initializable {
     }
 
     private void initEditContact() {
-        this.editFontIcon.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> {
+        this.editFontIcon.setOnMouseClicked(mouseEvent -> {
             this.contactActionLabel.setText("Edit Contact");
             var editContactView = View.of(EditContactController.class, AnchorPane.class);
             var editContactController = editContactView.controller();
             editContactController.setContactProperty(this.selectedContactProperty);
             var anchorPane = editContactView.component();
             this.contactBorderPane.setCenter(anchorPane);
+            this.contactActionBorderPane.setVisible(true);
             this.contactActionLabel.setText("Edit Contact");
             this.firstActionBorderPane.setCenter(this.cancelFontIcon);
-            this.secondActionBorderPane.setCenter(this.updateFontIcon);
+            this.secondActionBorderPane.setCenter(this.saveFontIcon);
+
+            this.cancelFontIcon.setOnMouseClicked(null);
+            this.cancelFontIcon.setOnMouseClicked(mouseEvent1 -> {
+                if (this.selectedContactProperty != null) {
+                    this.viewContact(this.selectedContactProperty);
+                }
+            });
+
+            this.saveFontIcon.setOnMouseClicked(null);
+            this.saveFontIcon.setOnMouseClicked(mouseEvent1 -> {
+                System.out.println("Update Save");
+            });
         });
     }
+
+    private void initNewContactFontIcon() {
+        this.newContactFontIcon.setOnMouseClicked(mouseEvent -> {
+            var newContactView = View.of(NewContactController.class, AnchorPane.class);
+            var newContactController = newContactView.controller();
+            var anchorPane = newContactView.component();
+            this.contactBorderPane.setCenter(anchorPane);
+            this.contactActionBorderPane.setVisible(true);
+            this.contactActionBorderPane.setStyle("-fx-background-color: #CCCCCC");
+            this.contactActionLabel.setStyle("-fx-text-fill: #3F51B5");
+            this.contactActionLabel.setText("New Contact");
+            this.contactActionLabel.setVisible(true);
+            this.firstActionBorderPane.setCenter(this.cancelFontIcon);
+            this.secondActionBorderPane.setCenter(this.saveFontIcon);
+
+            this.cancelFontIcon.setOnMouseClicked(null);
+            this.cancelFontIcon.setOnMouseClicked(mouseEvent1 -> {
+                this.contactActionBorderPane.setVisible(false);
+                this.contactActionLabel.setVisible(false);
+                this.contactActionLabel.setText(null);
+                this.contactBorderPane.setCenter(null);
+                if (this.selectedContactProperty != null) {
+                    this.viewContact(this.selectedContactProperty);
+                }
+            });
+
+            this.saveFontIcon.setOnMouseClicked(null);
+            this.saveFontIcon.setOnMouseClicked(mouseEvent1 -> {
+                System.out.println("New Save");
+                ContactProperty contactProperty = newContactController.contactProperty();
+                System.out.println(contactProperty.getFirstName());
+                Set<ConstraintViolation<ContactProperty>> contactConstraintViolations = this.validator.validate(contactProperty);
+                contactConstraintViolations.stream()
+                        .forEach(violation -> {
+                            System.out.println("Violation");
+                            System.out.println(violation.getMessage());
+                        });
+            });
+        });
+    }
+
 }

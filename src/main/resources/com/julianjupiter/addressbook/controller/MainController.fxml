@@ -82,7 +82,7 @@
          <center>
             <HBox alignment="CENTER_LEFT" BorderPane.alignment="CENTER">
                <children>
-                  <FontIcon iconColor="WHITE" iconLiteral="mdi-account-plus" iconSize="18">
+                  <FontIcon fx:id="newContactFontIcon" iconColor="WHITE" iconLiteral="mdi-account-plus" iconSize="18">
                      <HBox.margin>
                         <Insets left="10.0" right="10.0" />
                      </HBox.margin>
