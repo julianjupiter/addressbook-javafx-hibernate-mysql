@@ -30,10 +30,12 @@ public class ViewContactController implements Controller, Initializable {
     }
 
     private void setContactValues() {
-        this.firstNameLabel.setText(this.contactProperty.getFirstName());
-        this.lastNameLabel.setText(this.contactProperty.getLastName());
-        this.addressLabel.setText(this.contactProperty.getAddress());
-        this.mobileNumberLabel.setText(this.contactProperty.getMobileNumber());
-        this.emailAddressLabel.setText(this.contactProperty.getEmailAddress());
+        if (this.contactProperty != null) {
+            this.firstNameLabel.setText(this.contactProperty.getFirstName());
+            this.lastNameLabel.setText(this.contactProperty.getLastName());
+            this.addressLabel.setText(this.contactProperty.getAddress());
+            this.mobileNumberLabel.setText(this.contactProperty.getMobileNumber());
+            this.emailAddressLabel.setText(this.contactProperty.getEmailAddress());
+        }
     }
 }
