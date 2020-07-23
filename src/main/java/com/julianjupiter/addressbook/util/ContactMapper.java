@@ -15,4 +15,15 @@ public class ContactMapper {
                 .setCreatedAt(contact.getCreatedAt())
                 .setUpdatedAt(contact.getUpdatedAt());
     }
+
+    public Contact fromPropertyToEntity(ContactProperty contactProperty) {
+        return new Contact()
+                .setLastName(contactProperty.getLastName())
+                .setFirstName(contactProperty.getFirstName())
+                .setAddress(contactProperty.getAddress())
+                .setMobileNumber(contactProperty.getMobileNumber())
+                .setEmailAddress(contactProperty.getEmailAddress())
+                .setCreatedAt(contactProperty.getCreatedAt())
+                .setUpdatedAt(contactProperty.getUpdatedAt());
+    }
 }
