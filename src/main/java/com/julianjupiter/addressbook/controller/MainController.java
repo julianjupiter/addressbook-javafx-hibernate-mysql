@@ -7,7 +7,6 @@ import com.julianjupiter.addressbook.util.View;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
@@ -15,7 +14,6 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Paint;
@@ -24,7 +22,6 @@ import javafx.stage.Stage;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
 import javax.validation.Validator;
 import java.net.URL;
 import java.util.List;
@@ -33,7 +30,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class MainController implements Controller, Initializable {
-    private Stage primaryStage;
     @FXML
     private BorderPane headerBorderPane;
     private double xOffset = 0;
@@ -74,19 +70,22 @@ public class MainController implements Controller, Initializable {
 
     private ObservableList<ContactProperty> contactPropertiesObservable = FXCollections.observableArrayList();
 
+    private ResourceBundle resourceBundle;
+    private Stage primaryStage;
+    private ContactProperty selectedContactProperty;
+
     private final ContactService contactService;
     private final ContactMapper contactMapper;
-    private ContactProperty selectedContactProperty;
-    private final Validator validator;
+    private Validator validator;
 
     public MainController() {
         this.contactService = ContactService.create(ContactDao.create());
         this.contactMapper = new ContactMapper();
-        this.validator = Validation.buildDefaultValidatorFactory().getValidator();
     }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        this.resourceBundle = resourceBundle;
         this.initWindowEvents();
 
         this.initContactAction();
@@ -99,6 +98,10 @@ public class MainController implements Controller, Initializable {
 
     public void setPrimaryStage(Stage primaryStage) {
         this.primaryStage = primaryStage;
+    }
+
+    public void setValidator(Validator validator) {
+        this.validator = validator;
     }
 
     private void initWindowEvents() {
@@ -207,11 +210,9 @@ public class MainController implements Controller, Initializable {
             this.saveFontIcon.setOnMouseClicked(mouseEvent1 -> {
                 System.out.println("New Save");
                 ContactProperty contactProperty = newContactController.contactProperty();
-                System.out.println(contactProperty.getFirstName());
                 Set<ConstraintViolation<ContactProperty>> contactConstraintViolations = this.validator.validate(contactProperty);
                 contactConstraintViolations.stream()
                         .forEach(violation -> {
-                            System.out.println("Violation");
                             System.out.println(violation.getMessage());
                         });
             });

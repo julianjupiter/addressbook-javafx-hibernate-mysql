@@ -9,7 +9,6 @@ import javafx.beans.property.StringProperty;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.time.OffsetDateTime;
 
 public class ContactProperty {
@@ -46,7 +45,7 @@ public class ContactProperty {
         return this;
     }
 
-    @NotBlank
+    @NotBlank(message = "{contactProperty.lastName.NotBlank}")
     public String getLastName() {
         return lastName.get();
     }
@@ -60,7 +59,7 @@ public class ContactProperty {
         return this;
     }
 
-    @NotBlank
+    @NotBlank(message = "{contactProperty.firstName.NotBlank}")
     public String getFirstName() {
         return firstName.get();
     }
@@ -74,7 +73,7 @@ public class ContactProperty {
         return this;
     }
 
-    @NotBlank
+    @NotBlank(message = "{contactProperty.address.NotBlank}")
     public String getAddress() {
         return address.get();
     }
@@ -88,7 +87,7 @@ public class ContactProperty {
         return this;
     }
 
-    @NotBlank
+    @NotBlank(message = "{contactProperty.mobileNumber.NotBlank}")
     public String getMobileNumber() {
         return mobileNumber.get();
     }
@@ -102,7 +101,7 @@ public class ContactProperty {
         return this;
     }
 
-    @Email(regexp = ".+@.+\\..+")
+    @Email(regexp = ".+@.+\\..+", message = "{contactProperty.emailAddress.Email}")
     public String getEmailAddress() {
         return emailAddress.get();
     }
