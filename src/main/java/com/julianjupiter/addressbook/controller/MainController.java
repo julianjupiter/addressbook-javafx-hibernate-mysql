@@ -24,6 +24,7 @@ import org.kordamp.ikonli.javafx.FontIcon;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 import java.net.URL;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Set;
@@ -59,13 +60,9 @@ public class MainController implements Controller, Initializable {
     private BorderPane secondActionBorderPane;
     @FXML
     private FontIcon newContactFontIcon;
-    //    @FXML
     private FontIcon editFontIcon;
-    //    @FXML
     private FontIcon deleteFontIcon;
-    //    @FXML
     private FontIcon cancelFontIcon;
-    //    @FXML
     private FontIcon saveFontIcon;
 
     private ObservableList<ContactProperty> contactPropertiesObservable = FXCollections.observableArrayList();
@@ -208,13 +205,26 @@ public class MainController implements Controller, Initializable {
 
             this.saveFontIcon.setOnMouseClicked(null);
             this.saveFontIcon.setOnMouseClicked(mouseEvent1 -> {
-                System.out.println("New Save");
-                ContactProperty contactProperty = newContactController.contactProperty();
+                ContactProperty contactProperty = newContactController.contactProperty()
+                        .setCreatedAt(OffsetDateTime.now());
                 Set<ConstraintViolation<ContactProperty>> contactConstraintViolations = this.validator.validate(contactProperty);
-                contactConstraintViolations.stream()
-                        .forEach(violation -> {
-                            System.out.println(violation.getMessage());
-                        });
+                if (!contactConstraintViolations.isEmpty()) {
+                    var violations = contactConstraintViolations.stream()
+                            .collect(Collectors.toMap(
+                                    violation -> {
+                                        var segments = violation.getMessageTemplate().split("\\.");
+                                        return segments[1];
+                                    },
+                                    ConstraintViolation::getMessage
+                            ));
+                    newContactController.validation(violations);
+                } else {
+                    var contact = this.contactMapper.fromPropertyToEntity(contactProperty);
+                    this.contactService.save(contact);
+                    var createdContactProperty = this.contactMapper.fromEntityToProperty(contact);
+                    this.contactPropertiesObservable.add(createdContactProperty);
+                    this.contactTableView.getSelectionModel().select(createdContactProperty);
+                }
             });
         });
     }
