@@ -4,7 +4,6 @@ import com.julianjupiter.addressbook.entity.Contact;
 import com.julianjupiter.addressbook.util.PersistenceManager;
 
 import javax.persistence.EntityTransaction;
-import javax.persistence.TypedQuery;
 import java.util.List;
 import java.util.Optional;
 
@@ -13,30 +12,25 @@ class ContactDaoImpl implements ContactDao {
     @Override
     public List<Contact> findAll() {
         var entityManager = PersistenceManager.entityManager();
-        List<Contact> contacts;
 
         try {
-            TypedQuery<Contact> contactTypedQuery = entityManager.createQuery("SELECT c FROM Contact c", Contact.class);
-            contacts = contactTypedQuery.getResultList();
+            return entityManager
+                    .createQuery("SELECT c FROM Contact c", Contact.class)
+                    .getResultList();
         } finally {
             entityManager.close();
         }
-
-        return contacts;
     }
 
     @Override
     public Optional<Contact> findById(Long id) {
         var entityManager = PersistenceManager.entityManager();
-        Contact contact;
 
         try {
-            contact = entityManager.find(Contact.class, id);
+            return Optional.ofNullable(entityManager.find(Contact.class, id));
         } finally {
             entityManager.close();
         }
-
-        return Optional.ofNullable(contact);
     }
 
     @Override
@@ -47,7 +41,12 @@ class ContactDaoImpl implements ContactDao {
         try {
             transaction = entityManager.getTransaction();
             transaction.begin();
-            entityManager.persist(contact);
+            var id = contact.getId();
+            if (id != null && id > 0) {
+                entityManager.merge(contact);
+            } else {
+                entityManager.persist(contact);
+            }
             transaction.commit();
         } catch (Exception exception) {
             if (transaction != null && transaction.isActive()) {
@@ -60,7 +59,8 @@ class ContactDaoImpl implements ContactDao {
 
     @Override
     public void deleteById(Long id) {
-        Optional<Contact> contactOptional = findById(id);
+        var contactOptional = this.findById(id);
+
         contactOptional.ifPresent(contact -> {
             var entityManager = PersistenceManager.entityManager();
             EntityTransaction transaction = null;
@@ -68,9 +68,11 @@ class ContactDaoImpl implements ContactDao {
             try {
                 transaction = entityManager.getTransaction();
                 transaction.begin();
+                contact = entityManager.contains(contact) ? contact : entityManager.merge(contact);
                 entityManager.remove(contact);
                 transaction.commit();
             } catch (Exception exception) {
+                exception.printStackTrace();
                 if (transaction != null && transaction.isActive()) {
                     transaction.rollback();
                 }

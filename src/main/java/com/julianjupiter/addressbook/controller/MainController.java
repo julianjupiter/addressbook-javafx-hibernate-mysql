@@ -4,6 +4,7 @@ import com.julianjupiter.addressbook.dao.ContactDao;
 import com.julianjupiter.addressbook.service.ContactService;
 import com.julianjupiter.addressbook.util.ContactMapper;
 import com.julianjupiter.addressbook.util.View;
+import com.julianjupiter.viewfx.Controller;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -69,6 +70,7 @@ public class MainController implements Controller, Initializable {
 
     private ResourceBundle resourceBundle;
     private Stage primaryStage;
+    private int selectContactPropertyIndex = -1;
     private ContactProperty selectedContactProperty;
 
     private final ContactService contactService;
@@ -91,6 +93,7 @@ public class MainController implements Controller, Initializable {
         this.listContacts();
         this.addContact();
         this.editContact();
+        this.deleteContact();
     }
 
     public void setPrimaryStage(Stage primaryStage) {
@@ -230,6 +233,7 @@ public class MainController implements Controller, Initializable {
     }
 
     private void viewContact(ContactProperty contactProperty) {
+        this.selectContactPropertyIndex = this.contactTableView.getSelectionModel().getSelectedIndex();
         this.selectedContactProperty = contactProperty;
         var viewContactView = View.of(ViewContactController.class, AnchorPane.class);
         var viewContactController = viewContactView.controller();
@@ -247,7 +251,6 @@ public class MainController implements Controller, Initializable {
 
     private void editContact() {
         this.editFontIcon.setOnMouseClicked(mouseEvent -> {
-            this.contactActionLabel.setText("Edit Contact");
             var editContactView = View.of(EditContactController.class, AnchorPane.class);
             var editContactController = editContactView.controller();
             editContactController.setContactProperty(this.selectedContactProperty);
@@ -267,8 +270,51 @@ public class MainController implements Controller, Initializable {
 
             this.saveFontIcon.setOnMouseClicked(null);
             this.saveFontIcon.setOnMouseClicked(mouseEvent1 -> {
-                System.out.println("Update Save");
+                ContactProperty contactProperty = editContactController.contactProperty()
+                        .setUpdatedAt(OffsetDateTime.now());
+                Set<ConstraintViolation<ContactProperty>> contactConstraintViolations = this.validator.validate(contactProperty);
+                if (!contactConstraintViolations.isEmpty()) {
+                    var violations = contactConstraintViolations.stream()
+                            .collect(Collectors.toMap(
+                                    violation -> {
+                                        var segments = violation.getMessageTemplate().split("\\.");
+                                        return segments[1];
+                                    },
+                                    ConstraintViolation::getMessage
+                            ));
+                    editContactController.validation(violations);
+                } else {
+                    var contact = this.contactMapper.fromPropertyToEntity(contactProperty);
+                    this.contactService.save(contact);
+                    var updatedContactProperty = this.contactMapper.fromEntityToProperty(contact);
+                    this.selectedContactProperty = updatedContactProperty;
+                    this.contactTableView.getSelectionModel().select(this.selectedContactProperty);
+                }
             });
+        });
+    }
+
+    private void deleteContact() {
+        this.deleteFontIcon.setOnMouseClicked(mouseEvent -> {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Delete Contact");
+            alert.setHeaderText("You are about to delete the selected contact.");
+            alert.setContentText("Do you want to continue?");
+
+            alert.initModality(Modality.WINDOW_MODAL);
+            alert.initOwner(primaryStage);
+
+            alert.showAndWait()
+                    .filter(buttonType -> buttonType == ButtonType.OK)
+                    .ifPresent(buttonType -> {
+                        this.contactService.deleteById(this.selectedContactProperty.getId());
+                        this.contactPropertiesObservable.remove(this.selectedContactProperty);
+                        this.contactTableView.getSelectionModel().clearSelection();
+                        this.contactActionBorderPane.setVisible(false);
+                        this.contactActionLabel.setVisible(false);
+                        this.contactActionLabel.setText(null);
+                        this.contactBorderPane.setCenter(null);
+                    });
         });
     }
 

@@ -1,7 +1,7 @@
 package com.julianjupiter.addressbook;
 
 import com.julianjupiter.addressbook.controller.MainController;
-import com.julianjupiter.addressbook.util.View;
+import com.julianjupiter.viewfx.ViewFX;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
@@ -33,15 +33,15 @@ public class AddressBook extends Application {
         this.primaryStage.initStyle(StageStyle.UNDECORATED);
         this.primaryStage.setMaximized(false);
 
-        var view = View.of(MainController.class, BorderPane.class, resourceBundle());
-
-        var scene = new Scene(view.component());
+        var view = ViewFX.of(MainController.class, BorderPane.class, resourceBundle());
+        BorderPane borderPane = view.component();
+        var scene = new Scene(borderPane);
         scene.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
         this.primaryStage.setScene(scene);
         JMetro jMetro = new JMetro(Style.LIGHT);
         jMetro.setScene(scene);
 
-        var mainController = view.controller();
+        MainController mainController = view.controller();
         mainController.setPrimaryStage(this.primaryStage);
         mainController.setValidator(validator());
 

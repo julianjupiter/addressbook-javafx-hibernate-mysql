@@ -18,6 +18,7 @@ public class ContactMapper {
 
     public Contact fromPropertyToEntity(ContactProperty contactProperty) {
         return new Contact()
+                .setId(contactProperty.getId())
                 .setLastName(contactProperty.getLastName())
                 .setFirstName(contactProperty.getFirstName())
                 .setAddress(contactProperty.getAddress())

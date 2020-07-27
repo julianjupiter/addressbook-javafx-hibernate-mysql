@@ -7,6 +7,7 @@
     <groupId>com.julianjupiter</groupId>
     <artifactId>addressbook-javafx-hibernate-mysql</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
 
     <description>Address book application written in JavaFX with Hibernate and MySQL.</description>
 
@@ -27,6 +28,11 @@
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-fxml</artifactId>
             <version>${javafx.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.julianjupiter.viewfx</groupId>
+            <artifactId>viewfx</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.jfxtras</groupId>
