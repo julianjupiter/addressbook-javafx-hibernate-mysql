@@ -42,13 +42,15 @@ class ContactDaoImpl implements ContactDao {
             transaction = entityManager.getTransaction();
             transaction.begin();
             var id = contact.getId();
-            if (id != null && id > 0) {
+            if (id != null) {
                 entityManager.merge(contact);
             } else {
                 entityManager.persist(contact);
             }
             transaction.commit();
         } catch (Exception exception) {
+            exception.printStackTrace();
+
             if (transaction != null && transaction.isActive()) {
                 transaction.rollback();
             }
@@ -73,6 +75,7 @@ class ContactDaoImpl implements ContactDao {
                 transaction.commit();
             } catch (Exception exception) {
                 exception.printStackTrace();
+
                 if (transaction != null && transaction.isActive()) {
                     transaction.rollback();
                 }
