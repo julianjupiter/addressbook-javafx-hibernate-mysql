@@ -32,7 +32,7 @@ public class ContactProperty {
         this.updatedAt = new SimpleObjectProperty<>();
     }
 
-    public long getId() {
+    public Long getId() {
         return id.get();
     }
 
@@ -40,7 +40,7 @@ public class ContactProperty {
         return id;
     }
 
-    public ContactProperty setId(long id) {
+    public ContactProperty setId(Long id) {
         this.id.set(id);
         return this;
     }

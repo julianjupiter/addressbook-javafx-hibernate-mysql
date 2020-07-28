@@ -70,7 +70,6 @@ public class MainController implements Controller, Initializable {
 
     private ResourceBundle resourceBundle;
     private Stage primaryStage;
-    private int selectContactPropertyIndex = -1;
     private ContactProperty selectedContactProperty;
 
     private final ContactService contactService;
@@ -174,8 +173,7 @@ public class MainController implements Controller, Initializable {
         this.contactPropertiesObservable.addAll(contactProperties);
         this.contactTableView.setItems(this.contactPropertiesObservable);
 
-        this.contactTableView
-                .getSelectionModel()
+        this.contactTableView.getSelectionModel()
                 .selectedItemProperty()
                 .addListener((observable, oldValue, newValue) -> this.viewContact(newValue));
     }
@@ -222,7 +220,8 @@ public class MainController implements Controller, Initializable {
                             ));
                     newContactController.validation(violations);
                 } else {
-                    var contact = this.contactMapper.fromPropertyToEntity(contactProperty);
+                    var contact = this.contactMapper.fromPropertyToEntity(contactProperty)
+                            .setId(null);
                     this.contactService.save(contact);
                     var createdContactProperty = this.contactMapper.fromEntityToProperty(contact);
                     this.contactPropertiesObservable.add(createdContactProperty);
@@ -233,7 +232,6 @@ public class MainController implements Controller, Initializable {
     }
 
     private void viewContact(ContactProperty contactProperty) {
-        this.selectContactPropertyIndex = this.contactTableView.getSelectionModel().getSelectedIndex();
         this.selectedContactProperty = contactProperty;
         var viewContactView = View.of(ViewContactController.class, AnchorPane.class);
         var viewContactController = viewContactView.controller();
@@ -287,8 +285,13 @@ public class MainController implements Controller, Initializable {
                     var contact = this.contactMapper.fromPropertyToEntity(contactProperty);
                     this.contactService.save(contact);
                     var updatedContactProperty = this.contactMapper.fromEntityToProperty(contact);
-                    this.selectedContactProperty = updatedContactProperty;
-                    this.contactTableView.getSelectionModel().select(this.selectedContactProperty);
+                    this.selectedContactProperty
+                            .setLastName(updatedContactProperty.getLastName())
+                            .setFirstName(updatedContactProperty.getFirstName())
+                            .setAddress(updatedContactProperty.getAddress())
+                            .setMobileNumber(updatedContactProperty.getMobileNumber())
+                            .setEmailAddress(updatedContactProperty.getEmailAddress());
+                    this.viewContact(this.selectedContactProperty);
                 }
             });
         });
