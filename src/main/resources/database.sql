@@ -14,6 +14,5 @@ CREATE TABLE IF NOT EXISTS contact (
 );
 
 INSERT INTO contact(last_name, first_name, address, mobile_number, email_address) VALUES
-('Jupiter', 'Julian', 'San Roque St.', '09161234567', 'julianjupiter.io@gmail.com'),
 ('Rizal', 'Jose', 'Calamba, Laguna', '09161234568', 'joserizal@gmail.com'),
 ('Bonifacio', 'Andress', 'Tondo, Manila', '09161234569', 'andresbonifacio@gmail.com');
