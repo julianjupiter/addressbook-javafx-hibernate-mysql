@@ -11,6 +11,8 @@ public interface ContactService {
         return new ContactServiceImpl(contactDao);
     }
 
+    List<Contact> findByFirstNameOrLastName(String name);
+
     List<Contact> findAll();
 
     Optional<Contact> findById(Long id);

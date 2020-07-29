@@ -14,6 +14,11 @@ class ContactServiceImpl implements ContactService {
     }
 
     @Override
+    public List<Contact> findByFirstNameOrLastName(String name) {
+        return contactDao.findByFirstNameOrLastName(name);
+    }
+
+    @Override
     public List<Contact> findAll() {
         return contactDao.findAll();
     }

@@ -8,6 +8,19 @@ import java.util.List;
 import java.util.Optional;
 
 class ContactDaoImpl implements ContactDao {
+    @Override
+    public List<Contact> findByFirstNameOrLastName(String name) {
+        var entityManager = PersistenceManager.entityManager();
+
+        try {
+            return entityManager
+                    .createQuery("SELECT c FROM Contact c WHERE UPPER(c.lastName) LIKE :name OR UPPER(c.firstName) LIKE :name", Contact.class)
+                    .setParameter("name", "%" + name.toUpperCase() + "%")
+                    .getResultList();
+        } finally {
+            entityManager.close();
+        }
+    }
 
     @Override
     public List<Contact> findAll() {
