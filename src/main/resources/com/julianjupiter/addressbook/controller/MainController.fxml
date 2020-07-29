@@ -87,7 +87,7 @@
                         <Insets left="10.0" right="10.0" />
                      </HBox.margin>
                   </FontIcon>
-                  <TextField prefHeight="30.0" prefWidth="459.0" />
+                  <TextField fx:id="searchContactTextField" prefHeight="30.0" prefWidth="459.0" />
                </children>
                <opaqueInsets>
                   <Insets />

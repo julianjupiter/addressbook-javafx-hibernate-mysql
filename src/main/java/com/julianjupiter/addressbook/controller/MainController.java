@@ -15,6 +15,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Paint;
@@ -60,13 +61,15 @@ public class MainController implements Controller, Initializable {
     @FXML
     private BorderPane secondActionBorderPane;
     @FXML
+    private TextField searchContactTextField;
+    @FXML
     private FontIcon newContactFontIcon;
     private FontIcon editFontIcon;
     private FontIcon deleteFontIcon;
     private FontIcon cancelFontIcon;
     private FontIcon saveFontIcon;
 
-    private ObservableList<ContactProperty> contactPropertiesObservable = FXCollections.observableArrayList();
+    private final ObservableList<ContactProperty> contactPropertiesObservable = FXCollections.observableArrayList();
 
     private ResourceBundle resourceBundle;
     private Stage primaryStage;
@@ -86,9 +89,11 @@ public class MainController implements Controller, Initializable {
         this.resourceBundle = resourceBundle;
         this.initWindowEvents();
 
+//        this.initContactBorderPane();
         this.initContactAction();
         this.initContactActionFontIcons();
 
+        this.searchContact();
         this.listContacts();
         this.addContact();
         this.editContact();
@@ -161,6 +166,24 @@ public class MainController implements Controller, Initializable {
         this.saveFontIcon.setIconColor(Paint.valueOf("#3F51B5"));
         this.saveFontIcon.setIconLiteral("mdi-content-save");
         this.saveFontIcon.setIconSize(18);
+    }
+
+    private void searchContact() {
+        this.searchContactTextField.setOnKeyPressed(keyEvent -> {
+            this.selectedContactProperty = null;
+            this.contactTableView.getSelectionModel().clearSelection();
+            this.contactActionBorderPane.setVisible(false);
+            this.contactActionLabel.setVisible(false);
+            this.contactActionLabel.setText(null);
+            this.contactBorderPane.setCenter(null);
+        });
+        this.searchContactTextField.setOnKeyReleased(keyEvent -> {
+            var name = this.searchContactTextField.getText();
+            List<ContactProperty> searchedContactProperties = this.contactService.findByFirstNameOrLastName(name).stream()
+                    .map(contactMapper::fromEntityToProperty)
+                    .collect(Collectors.toUnmodifiableList());
+            this.contactPropertiesObservable.setAll(searchedContactProperties);
+        });
     }
 
     private void listContacts() {
