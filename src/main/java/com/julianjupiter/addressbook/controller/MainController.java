@@ -178,7 +178,7 @@ public class MainController implements Controller, Initializable {
             this.contactBorderPane.setCenter(null);
         });
         this.searchContactTextField.setOnKeyReleased(keyEvent -> {
-            var name = this.searchContactTextField.getText();
+            var name = this.searchContactTextField.getText().trim();
             List<ContactProperty> searchedContactProperties = this.contactService.findByFirstNameOrLastName(name).stream()
                     .map(contactMapper::fromEntityToProperty)
                     .collect(Collectors.toUnmodifiableList());
