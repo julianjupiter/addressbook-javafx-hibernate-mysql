@@ -38,14 +38,17 @@ Search has not been implemented yet.
 #### View Contact
 ![alt text](screenshots/02.JPG "Home")
 
-#### New Contact
+#### Edit Contact
 ![alt text](screenshots/03.JPG "Home")
 
-#### Edit Contact
+#### Add Contact
 ![alt text](screenshots/04.JPG "Home")
 
-#### Delete Contact
+#### Search Contact
 ![alt text](screenshots/05.JPG "Home")
 
-#### Close Application
+#### Delete Contact
 ![alt text](screenshots/06.JPG "Home")
+
+#### Close Application
+![alt text](screenshots/07.JPG "Home")
