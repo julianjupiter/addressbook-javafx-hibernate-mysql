@@ -10,6 +10,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
@@ -89,7 +90,6 @@ public class MainController implements Controller, Initializable {
         this.resourceBundle = resourceBundle;
         this.initWindowEvents();
 
-//        this.initContactBorderPane();
         this.initContactAction();
         this.initContactActionFontIcons();
 
@@ -179,21 +179,34 @@ public class MainController implements Controller, Initializable {
         });
         this.searchContactTextField.setOnKeyReleased(keyEvent -> {
             var name = this.searchContactTextField.getText().trim();
-            List<ContactProperty> searchedContactProperties = this.contactService.findByFirstNameOrLastName(name).stream()
+            this.contactPropertiesObservable.setAll(this.findContacts(name));
+
+            Node xButton = this.searchContactTextField.lookup(".right-button-graphic");
+            if(xButton != null) {
+                xButton.setOnMousePressed(mouseEvent -> {
+                    this.contactPropertiesObservable.setAll(this.findContacts(null));
+                });
+            }
+        });
+    }
+
+    private List<ContactProperty> findContacts(String name) {
+        if (name == null || name.isBlank()) {
+            return this.contactService.findAll().stream()
                     .map(contactMapper::fromEntityToProperty)
                     .collect(Collectors.toUnmodifiableList());
-            this.contactPropertiesObservable.setAll(searchedContactProperties);
-        });
+        }
+
+        return this.contactService.findByFirstNameOrLastName(name).stream()
+                .map(contactMapper::fromEntityToProperty)
+                .collect(Collectors.toUnmodifiableList());
     }
 
     private void listContacts() {
         this.firstNameTableColumn.setCellValueFactory(cellData -> cellData.getValue().firstNameProperty());
         this.lastNameTableColumn.setCellValueFactory(cellData -> cellData.getValue().lastNameProperty());
 
-        List<ContactProperty> contactProperties = this.contactService.findAll().stream()
-                .map(contactMapper::fromEntityToProperty)
-                .collect(Collectors.toUnmodifiableList());
-        this.contactPropertiesObservable.addAll(contactProperties);
+        this.contactPropertiesObservable.addAll(this.findContacts(null));
         this.contactTableView.setItems(this.contactPropertiesObservable);
 
         this.contactTableView.getSelectionModel()
