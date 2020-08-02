@@ -242,8 +242,7 @@ public class MainController implements Controller, Initializable {
 
             this.saveFontIcon.setOnMouseClicked(null);
             this.saveFontIcon.setOnMouseClicked(mouseEvent1 -> {
-                ContactProperty contactProperty = newContactController.contactProperty()
-                        .setCreatedAt(OffsetDateTime.now());
+                ContactProperty contactProperty = newContactController.contactProperty();
                 Set<ConstraintViolation<ContactProperty>> contactConstraintViolations = this.validator.validate(contactProperty);
                 if (!contactConstraintViolations.isEmpty()) {
                     var violations = contactConstraintViolations.stream()

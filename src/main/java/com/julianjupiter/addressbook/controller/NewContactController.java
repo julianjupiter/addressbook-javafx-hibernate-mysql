@@ -7,6 +7,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
 
 import java.net.URL;
+import java.time.OffsetDateTime;
 import java.util.Map;
 import java.util.ResourceBundle;
 
@@ -34,7 +35,7 @@ public class NewContactController implements Controller, Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-
+        
     }
 
     public ContactProperty contactProperty() {
@@ -43,7 +44,8 @@ public class NewContactController implements Controller, Initializable {
                 .setLastName(lastNameTextField.getText())
                 .setAddress(addressTextField.getText())
                 .setMobileNumber(mobileNumberTextField.getText())
-                .setEmailAddress(emailAddressTextField.getText());
+                .setEmailAddress(emailAddressTextField.getText())
+                .setCreatedAt(OffsetDateTime.now());
     }
 
     public void validation(Map<String, String> violations) {
