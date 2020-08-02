@@ -37,7 +37,7 @@ INSERT INTO contact(last_name, first_name, address, mobile_number, email_address
 ```bash
 $ cd addressbook-javafx-hibernate-mysql
 $ ./mvnw clean package
-$ java -jar java -jar ./target/addressbook-javafx-hibernate-mysql-0.0.2.jar
+$ java -jar java -jar ./target/addressbook-javafx-hibernate-mysql-0.0.3.jar
 ```
 
 - Windows
@@ -45,7 +45,7 @@ $ java -jar java -jar ./target/addressbook-javafx-hibernate-mysql-0.0.2.jar
 ```bash
 > cd addressbook-javafx-hibernate-mysql
 > .\mvnw clean package
-> java -jar java -jar .\target\addressbook-javafx-hibernate-mysql-0.0.2.jar
+> java -jar java -jar .\target\addressbook-javafx-hibernate-mysql-0.0.3.jar
 ```
 
 ## Note

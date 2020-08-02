@@ -6,7 +6,7 @@
 
     <groupId>com.julianjupiter</groupId>
     <artifactId>addressbook-javafx-hibernate-mysql</artifactId>
-    <version>0.0.2</version>
+    <version>0.0.3</version>
     <packaging>jar</packaging>
 
     <description>Address book application written in JavaFX with Hibernate and MySQL.</description>
