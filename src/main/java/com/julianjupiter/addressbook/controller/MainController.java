@@ -304,8 +304,7 @@ public class MainController implements Controller, Initializable {
 
             this.saveFontIcon.setOnMouseClicked(null);
             this.saveFontIcon.setOnMouseClicked(mouseEvent1 -> {
-                ContactProperty contactProperty = editContactController.contactProperty()
-                        .setUpdatedAt(OffsetDateTime.now());
+                ContactProperty contactProperty = editContactController.contactProperty();
                 Set<ConstraintViolation<ContactProperty>> contactConstraintViolations = this.validator.validate(contactProperty);
                 if (!contactConstraintViolations.isEmpty()) {
                     var violations = contactConstraintViolations.stream()
@@ -326,7 +325,9 @@ public class MainController implements Controller, Initializable {
                             .setFirstName(updatedContactProperty.getFirstName())
                             .setAddress(updatedContactProperty.getAddress())
                             .setMobileNumber(updatedContactProperty.getMobileNumber())
-                            .setEmailAddress(updatedContactProperty.getEmailAddress());
+                            .setEmailAddress(updatedContactProperty.getEmailAddress())
+                            .setCreatedAt(updatedContactProperty.getCreatedAt())
+                            .setUpdatedAt(updatedContactProperty.getUpdatedAt());
                     this.viewContact(this.selectedContactProperty);
                 }
             });
