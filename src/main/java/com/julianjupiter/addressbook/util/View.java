@@ -23,7 +23,7 @@ public class View<T extends Controller, U extends Parent> {
 
     public static <T extends Controller, U extends Parent> View<T, U> of(Class<T> controllerClass, Class<U> componentClass) {
         try {
-            return new View(controllerClass, null);
+            return new View<>(controllerClass, null);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -31,7 +31,7 @@ public class View<T extends Controller, U extends Parent> {
 
     public static <T extends Controller, U extends Parent> View<T, U> of(Class<T> controllerClass, Class<U> componentClass, ResourceBundle resourceBundle) {
         try {
-            return new View(controllerClass, resourceBundle);
+            return new View<>(controllerClass, resourceBundle);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
