@@ -17,6 +17,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Paint;
@@ -180,10 +181,9 @@ public class MainController implements Controller, Initializable {
         this.searchContactTextField.setOnKeyReleased(keyEvent -> {
             var name = this.searchContactTextField.getText().trim();
             this.contactPropertiesObservable.setAll(this.findContacts(name));
-
-            Node xButton = this.searchContactTextField.lookup(".right-button-graphic");
+            Node xButton = this.searchContactTextField.lookup(".right-button");
             if(xButton != null) {
-                xButton.setOnMousePressed(mouseEvent -> {
+                xButton.addEventHandler(MouseEvent.MOUSE_PRESSED, mouseEvent -> {
                     this.contactPropertiesObservable.setAll(this.findContacts(null));
                 });
             }
@@ -242,8 +242,7 @@ public class MainController implements Controller, Initializable {
 
             this.saveFontIcon.setOnMouseClicked(null);
             this.saveFontIcon.setOnMouseClicked(mouseEvent1 -> {
-                ContactProperty contactProperty = newContactController.contactProperty()
-                        .setCreatedAt(OffsetDateTime.now());
+                ContactProperty contactProperty = newContactController.contactProperty();
                 Set<ConstraintViolation<ContactProperty>> contactConstraintViolations = this.validator.validate(contactProperty);
                 if (!contactConstraintViolations.isEmpty()) {
                     var violations = contactConstraintViolations.stream()
@@ -304,8 +303,7 @@ public class MainController implements Controller, Initializable {
 
             this.saveFontIcon.setOnMouseClicked(null);
             this.saveFontIcon.setOnMouseClicked(mouseEvent1 -> {
-                ContactProperty contactProperty = editContactController.contactProperty()
-                        .setUpdatedAt(OffsetDateTime.now());
+                ContactProperty contactProperty = editContactController.contactProperty();
                 Set<ConstraintViolation<ContactProperty>> contactConstraintViolations = this.validator.validate(contactProperty);
                 if (!contactConstraintViolations.isEmpty()) {
                     var violations = contactConstraintViolations.stream()
@@ -326,7 +324,9 @@ public class MainController implements Controller, Initializable {
                             .setFirstName(updatedContactProperty.getFirstName())
                             .setAddress(updatedContactProperty.getAddress())
                             .setMobileNumber(updatedContactProperty.getMobileNumber())
-                            .setEmailAddress(updatedContactProperty.getEmailAddress());
+                            .setEmailAddress(updatedContactProperty.getEmailAddress())
+                            .setCreatedAt(updatedContactProperty.getCreatedAt())
+                            .setUpdatedAt(updatedContactProperty.getUpdatedAt());
                     this.viewContact(this.selectedContactProperty);
                 }
             });
